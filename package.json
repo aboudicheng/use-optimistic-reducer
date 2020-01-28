@@ -1,11 +1,12 @@
 {
   "name": "use-optimistic-reducer",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "React reducer hook for handling optimistic UI updates and race-conditions.",
   "main": "build/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": ".\\node_modules\\.bin\\babel src --out-file ./build/index.js"
+    "build": ".\\node_modules\\.bin\\babel src --out-file ./build/index.js",
+    "release": "standard-version"
   },
   "repository": "https://github.com/aboudicheng/use-optimistic-reducer",
   "author": "Ping Cheng",
@@ -18,7 +19,8 @@
     "@babel/core": "^7.8.3",
     "@babel/preset-env": "^7.8.3",
     "@babel/preset-react": "^7.8.3",
-    "react": "^16.12.0"
+    "react": "^16.12.0",
+    "standard-version": "^7.1.0"
   },
   "keywords": [
     "react",
