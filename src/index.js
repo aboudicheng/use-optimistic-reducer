@@ -1,13 +1,18 @@
-import React, { useState, useReducer, useCallback } from "react";
+import React, { useState, useEffect, useReducer, useCallback } from "react";
 
 function useOptimisticReducer() {
   const [scheduler, setScheduler] = useState({});
+  const [awaited, setAwaited] = useState(null);
 
   const [state, dispatch] = useReducer(...arguments);
 
-  React.useEffect(() => {
+  useEffect(() => {
     runCallback();
   }, [scheduler]);
+
+  useEffect(() => {
+    if (awaited) nextSchedule(awaited);
+  }, [awaited]);
 
   const nextSchedule = useCallback(
     key => {
@@ -46,7 +51,9 @@ function useOptimisticReducer() {
 
         optimistic.queue[0]
           .callback()
-          .then(nextSchedule(key))
+          .then(() => {
+            setAwaited(key);
+          })
           .catch(e => {
             const action = scheduler[key].fallbackAction();
             // if an action is returned
