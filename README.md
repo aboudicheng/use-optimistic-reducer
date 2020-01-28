@@ -1,4 +1,6 @@
 # use-optimistic-reducer
+[![npm version](https://badge.fury.io/js/use-optimistic-reducer.svg)](https://badge.fury.io/js/use-optimistic-reducer) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT) ![npm bundle size](https://img.shields.io/bundlephobia/minzip/use-optimistic-reducer) ![David](https://img.shields.io/david/aboudicheng/use-optimistic-reducer)
+
 React reducer hook for handling optimistic UI updates and race-conditions.
 
 ## Installation
