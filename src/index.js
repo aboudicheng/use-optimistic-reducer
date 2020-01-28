@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useReducer, useCallback } from "react";
+import { useState, useEffect, useReducer, useCallback } from "react";
 
 function useOptimisticReducer() {
   const [scheduler, setScheduler] = useState({});
