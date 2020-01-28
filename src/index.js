@@ -1,6 +1,6 @@
 import React, { useState, useReducer, useCallback } from "react";
 
-function useOptimisticUIReducer() {
+function useOptimisticReducer() {
   const [scheduler, setScheduler] = useState({});
 
   const [state, dispatch] = useReducer(...arguments);
@@ -107,4 +107,4 @@ function useOptimisticUIReducer() {
   return [state, customDispatch];
 }
 
-export default useOptimisticUIReducer;
+export default useOptimisticReducer;
