@@ -11,7 +11,7 @@ function useOptimisticReducer() {
   }, [scheduler]);
 
   useEffect(() => {
-    if (awaited) nextSchedule(awaited);
+    if (awaited) nextSchedule(awaited.key);
   }, [awaited]);
 
   const nextSchedule = useCallback(
@@ -52,7 +52,7 @@ function useOptimisticReducer() {
         optimistic.queue[0]
           .callback()
           .then(() => {
-            setAwaited(key);
+            setAwaited({ key });
           })
           .catch(e => {
             const action = scheduler[key].fallbackAction();
