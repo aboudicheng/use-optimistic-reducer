@@ -9,7 +9,7 @@
   },
   "repository": "https://github.com/aboudicheng/use-optimistic-reducer",
   "author": "Ping Cheng",
-  "license": "ISC",
+  "license": "MIT",
   "peerDependencies": {
     "react": "^16.8.0"
   },
