@@ -26,6 +26,6 @@
     "react",
     "react-hooks",
     "optimistic-ui",
-    "race-condition"
+    "redux"
   ]
 }
