@@ -1,24 +1,35 @@
 import { useState, useEffect, useReducer, useCallback } from "react";
+import {
+  IScheduler,
+  IAwaited,
+  Reducer,
+  ReducerState,
+  Dispatch,
+  ReducerAction
+} from './types';
 
-function useOptimisticReducer() {
-  const [scheduler, setScheduler] = useState({});
-  const [awaited, setAwaited] = useState(null);
+function useOptimisticReducer<R extends Reducer<any, any>, I>(
+  reducer: R,
+  initializerArg: I & ReducerState<R>
+): [ReducerState<R>, Dispatch<ReducerAction<R>>] {
+  const [scheduler, setScheduler] = useState<IScheduler>({});
+  const [awaited, setAwaited] = useState<IAwaited>({ key: null });
 
-  const [state, dispatch] = useReducer(...arguments);
+  const [state, dispatch] = useReducer(reducer, initializerArg);
 
   useEffect(() => {
     runCallback();
   }, [scheduler]);
 
   useEffect(() => {
-    if (awaited) nextSchedule(awaited.key);
+    if (awaited.key) nextSchedule(awaited.key);
   }, [awaited]);
 
   const nextSchedule = useCallback(
-    key => {
+    (key: string) => {
       const nextQueue = scheduler[key].queue.slice(1);
 
-      setScheduler(prev => {
+      setScheduler((prev) => {
         return {
           ...prev,
           [key]: {
@@ -33,13 +44,13 @@ function useOptimisticReducer() {
     [scheduler]
   );
 
-  function runCallback() {
+  function runCallback(): void {
     for (let key in scheduler) {
       const optimistic = scheduler[key];
       // If queue is waiting to be called
       if (!optimistic.isCompleted && !optimistic.isFetching) {
         // Start fetching
-        setScheduler(prev => {
+        setScheduler((prev) => {
           return {
             ...prev,
             [key]: {
@@ -54,13 +65,13 @@ function useOptimisticReducer() {
           .then(() => {
             setAwaited({ key });
           })
-          .catch(e => {
-            const action = scheduler[key].fallbackAction();
+          .catch(() => {
+            const action = scheduler[key].queue[0].fallbackAction();
             // if an action is returned
             if (action.type) {
               dispatch(action);
             }
-            setScheduler(prev => {
+            setScheduler((prev) => {
               return {
                 ...prev,
                 [key]: {
@@ -75,14 +86,14 @@ function useOptimisticReducer() {
     }
   }
 
-  function customDispatch(action) {
+  function customDispatch(action: ReducerAction<R>): void {
     // Update the UI first
     dispatch(action);
 
-    const { optimistic, fallbackAction } = action;
+    // If action is dispatched optimistically
+    const { optimistic } = action;
     let currentScheduler = scheduler;
 
-    // If action is dispatched optimistically
     if (typeof optimistic === "object") {
       // Schedule callback
       if (action.type in scheduler) {
@@ -101,7 +112,6 @@ function useOptimisticReducer() {
           ...currentScheduler,
           [action.type]: {
             queue: [optimistic],
-            fallbackAction,
             isFetching: false,
             isCompleted: false
           }

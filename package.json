@@ -4,8 +4,8 @@
   "description": "React reducer hook for handling optimistic UI updates and race-conditions.",
   "main": "build/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "build": ".\\node_modules\\.bin\\babel src --out-file ./build/index.js",
+    "test": "jest --config jestconfig.json --watch --verbose false",
+    "build": "tsc",
     "release": "standard-version"
   },
   "repository": "https://github.com/aboudicheng/use-optimistic-reducer",
@@ -19,13 +19,23 @@
     "@babel/core": "^7.8.3",
     "@babel/preset-env": "^7.8.3",
     "@babel/preset-react": "^7.8.3",
+    "@testing-library/react-hooks": "^3.2.1",
+    "@types/jest": "^25.1.0",
+    "@types/react": "^16.9.19",
+    "jest": "^25.1.0",
     "react": "^16.12.0",
-    "standard-version": "^7.1.0"
+    "react-test-renderer": "^16.8.0",
+    "standard-version": "^7.1.0",
+    "ts-jest": "^25.0.0",
+    "typescript": "^3.7.5"
   },
   "keywords": [
     "react",
     "react-hooks",
     "optimistic-ui",
     "redux"
+  ],
+  "files": [
+    "build/**/*"
   ]
 }
