@@ -20,23 +20,25 @@ function reducer(state, action) {
 }
 
 function App() {
+  // Define your reducer the same way you would for React.useReducer()
   const [state, dispatch] = useOptimisticReducer(reducer, initialState);
 
+  // optimistic actions
   const doubleIncAction = {
     type: "double-increment",
     optimistic: {
       callback: async function () {
         return new Promise((resolve, reject) => {
           setTimeout(() => {
-            console.log("this is an inc callback");
+            console.log("This is a callback from double-increment");
             resolve();
           }, 3000);
         });
+      },
+      fallbackAction: function () {
+        alert("Failed!");
+        return { type: "double-decrement" };
       }
-    },
-    fallbackAction: function () {
-      alert("Failed!");
-      return { type: "double-decrement" };
     }
   };
 

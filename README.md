@@ -67,11 +67,11 @@ function App() {
             resolve();
           }, 3000);
         });
+      },
+      fallbackAction: function () {
+        alert("Failed!");
+        return { type: "double-decrement" };
       }
-    },
-    fallbackAction: function () {
-      alert("Failed!");
-      return { type: "double-decrement" };
     }
   };
 
