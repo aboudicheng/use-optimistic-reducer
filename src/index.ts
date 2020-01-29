@@ -68,7 +68,7 @@ function useOptimisticReducer<R extends Reducer<any, any>, I>(
           .catch(() => {
             const action = scheduler[key].queue[0].fallbackAction();
             // if an action is returned
-            if (action.type) {
+            if (typeof action === 'object') {
               dispatch(action);
             }
             setScheduler((prev) => {
