@@ -10,13 +10,12 @@ import {
 
 function useOptimisticReducer<R extends Reducer<any, any>, I>(
   reducer: R,
-  initializerArg: I & ReducerState<R>,
-  initializer: (arg: I & ReducerState<R>) => ReducerState<R>
+  initializerArg: I & ReducerState<R>
 ): [ReducerState<R>, Dispatch<ReducerAction<R>>] {
   const [scheduler, setScheduler] = useState<IScheduler>({});
   const [awaited, setAwaited] = useState<IAwaited>({ key: null });
 
-  const [state, dispatch] = useReducer(reducer, initializerArg, initializer);
+  const [state, dispatch] = useReducer(reducer, initializerArg);
 
   useEffect(() => {
     runCallback();
