@@ -60,7 +60,7 @@ function App() {
   const doubleIncAction = {
     type: "double-increment",
     optimistic: {
-      callback: async function () {
+      callback: function () {
         return new Promise((resolve, reject) => {
           setTimeout(() => {
             console.log("This is a callback from double-increment");
@@ -78,7 +78,7 @@ function App() {
   const doubleDecAction = {
     type: "double-decrement",
     optimistic: {
-      callback: async function () {
+      callback: function () {
         return new Promise(resolve => {
           setTimeout(() => {
             console.log("This is a callback from double-decrement");
