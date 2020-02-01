@@ -95,14 +95,20 @@ function useOptimisticReducer<R extends Reducer<any, any>, I>(
     let currentScheduler = scheduler;
 
     if (typeof optimistic === "object") {
+      /**
+       * If a specific queue is included within the optimistic object,
+       * the actions will be executed in a separate queue.
+       * If no queue is specified, the action type will be used by default.
+       */
+      const key: string = optimistic.queue ? optimistic.queue : action.type;
       // Schedule callback
-      if (action.type in scheduler) {
+      if (key in scheduler) {
         // Append action into the existing queue
         currentScheduler = {
           ...currentScheduler,
-          [action.type]: {
-            ...currentScheduler[action.type],
-            queue: [...currentScheduler[action.type].queue, optimistic],
+          [key]: {
+            ...currentScheduler[key],
+            queue: [...currentScheduler[key].queue, optimistic],
             isCompleted: false
           }
         };
@@ -110,7 +116,7 @@ function useOptimisticReducer<R extends Reducer<any, any>, I>(
         // Add action to a new queue
         currentScheduler = {
           ...currentScheduler,
-          [action.type]: {
+          [key]: {
             queue: [optimistic],
             isFetching: false,
             isCompleted: false

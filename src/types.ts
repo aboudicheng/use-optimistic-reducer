@@ -1,6 +1,7 @@
 export interface IOptimistic {
   callback: Function,
   fallbackAction: Function,
+  queue?: string
 }
 
 export interface IScheduler {
