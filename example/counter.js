@@ -38,7 +38,8 @@ function App() {
       fallbackAction: function () {
         alert("Failed!");
         return { type: "double-decrement" };
-      }
+      },
+      queue: "double"
     }
   };
 
@@ -56,7 +57,8 @@ function App() {
       fallbackAction: function () {
         alert("Failed!");
         return { type: "double-increment" };
-      }
+      },
+      queue: "double"
     }
   };
 

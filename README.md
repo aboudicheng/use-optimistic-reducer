@@ -7,10 +7,14 @@ React reducer hook for handling optimistic UI updates and race-conditions.
 `$ npm install use-optimistic-reducer`
 
 ## How It Works
-Internally, `useOptimisticReducer` uses the `React.useReducer()` hook to handle its state. You can use `useOptimisticReducer` to update the state by sending an action using `dispatch`.
-<br>
+Internally, `useOptimisticReducer` uses the `React.useReducer()` hook to handle its state. You can use `useOptimisticReducer` to update the state by dispatching an action.
+
 Whenever you need to make an optimistic UI update, you simply need to add another property named as `optimistic` inside your action object.
-<br>
+
+By default, **a queue is formed whenever a new action is being dispatched.** If an action of the same type is dispatched, this action's callback will be put into the queue and wait until all the previous callbacks to be executed.
+
+**If you wish to put your callbacks onto a separate queue, you may define a string as the identifier for the queue.**
+
 An example of an optimistic action object would look like this:
 
 ```javascript
@@ -18,15 +22,20 @@ const action = {
   type: "ADD_TODO",
   payload: {},
   optimistic: {
-    // Callback function that will be called in the background. It should be an async function
-    callback: async function () {
-    },
-    // Fallback function that will be called when callback throws and error. You may optionally return an action that will be dispatched immediately.
-    fallbackAction: function () {
-    }
+    callback: async function () {},
+    fallbackAction: function () {},
+    queue: "" // (Optional)
   }
 }
 ``` 
+
+## The `optimistic` property
+
+| name                      | required | default | description |
+| ------------------------- | -------- | ------- | ------------| 
+| callback | yes |  | Callback function that will be called in the background. It should be an asynchronous function. |
+| fallbackAction | yes | | Fallback function that will be called when `callback` throws and error. You may optionally return an action that will be dispatched immediately. |
+| queue | no | action.type | `String` identifier that will be used to execute callbacks on separate queues | 
 
 ## Example Usage
 
@@ -71,7 +80,8 @@ function App() {
       fallbackAction: function () {
         alert("Failed!");
         return { type: "double-decrement" };
-      }
+      },
+      queue: "double"
     }
   };
 
@@ -89,7 +99,8 @@ function App() {
       fallbackAction: function () {
         alert("Failed!");
         return { type: "double-increment" };
-      }
+      },
+      queue: "double"
     }
   };
 
