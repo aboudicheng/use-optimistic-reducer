@@ -6,6 +6,8 @@ const initialState = { count: 0 };
 
 function reducer(state, action) {
   switch (action.type) {
+    case "reset":
+      return action.payload;
     case "increment":
       return { count: state.count + 1 };
     case "decrement":
@@ -27,7 +29,7 @@ function App() {
   const doubleIncAction = {
     type: "double-increment",
     optimistic: {
-      callback: function () {
+      callback: () => {
         return new Promise((resolve, reject) => {
           setTimeout(() => {
             console.log("This is a callback from double-increment");
@@ -35,9 +37,9 @@ function App() {
           }, 3000);
         });
       },
-      fallbackAction: function () {
+      fallbackAction: (prevState) => {
         alert("Failed!");
-        return { type: "double-decrement" };
+        dispatch({ type: "reset", payload: prevState });
       },
       queue: "double"
     }
@@ -46,7 +48,7 @@ function App() {
   const doubleDecAction = {
     type: "double-decrement",
     optimistic: {
-      callback: function () {
+      callback: () => {
         return new Promise(resolve => {
           setTimeout(() => {
             console.log("This is a callback from double-decrement");
@@ -54,9 +56,9 @@ function App() {
           }, 3000);
         });
       },
-      fallbackAction: function () {
+      fallback: (prevState) => {
         alert("Failed!");
-        return { type: "double-increment" };
+        dispatch({ type: "reset", payload: prevState });
       },
       queue: "double"
     }
