@@ -22,8 +22,8 @@ const action = {
   type: "ADD_TODO",
   payload: {},
   optimistic: {
-    callback: async function () {},
-    fallbackAction: function () {},
+    callback: async () => {},
+    fallbackAction: (prevState) => {},
     queue: "" // (Optional)
   }
 }
@@ -31,11 +31,11 @@ const action = {
 
 ## The `optimistic` property
 
-| name                      | required | default | description |
-| ------------------------- | -------- | ------- | ------------| 
-| callback | yes |  | Callback function that will be called in the background. It should be an asynchronous function. |
-| fallbackAction | yes | | Fallback function that will be called when `callback` throws and error. You may optionally return an action that will be dispatched immediately. |
-| queue | no | action.type | `String` identifier that will be used to execute callbacks on separate queues | 
+| Name                      | Required | Default | Type | Description |
+| ------------------------- | -------- | ------- | ---- | ------------|
+| callback | yes |  | Function | Callback function that will be called in the background. It should be an asynchronous function. |
+| fallback | yes | | Function(prevState) | Fallback function that will be called when `callback` throws and error. You may optionally return an action that will be dispatched immediately. |
+| queue | no | action.type | string | Identifier that will be used to execute callbacks on separate queues |
 
 ## Example Usage
 
@@ -48,6 +48,8 @@ const initialState = { count: 0 };
 
 function reducer(state, action) {
   switch (action.type) {
+    case "reset":
+      return action.payload;
     case "increment":
       return { count: state.count + 1 };
     case "decrement":
@@ -69,7 +71,7 @@ function App() {
   const doubleIncAction = {
     type: "double-increment",
     optimistic: {
-      callback: function () {
+      callback: () => {
         return new Promise((resolve, reject) => {
           setTimeout(() => {
             console.log("This is a callback from double-increment");
@@ -77,9 +79,9 @@ function App() {
           }, 3000);
         });
       },
-      fallbackAction: function () {
+      fallbackAction: (prevState) => {
         alert("Failed!");
-        return { type: "double-decrement" };
+        dispatch({ type: "reset", payload: prevState });
       },
       queue: "double"
     }
@@ -88,7 +90,7 @@ function App() {
   const doubleDecAction = {
     type: "double-decrement",
     optimistic: {
-      callback: function () {
+      callback: () => {
         return new Promise(resolve => {
           setTimeout(() => {
             console.log("This is a callback from double-decrement");
@@ -96,9 +98,9 @@ function App() {
           }, 3000);
         });
       },
-      fallbackAction: function () {
+      fallbackAction: () => {
         alert("Failed!");
-        return { type: "double-increment" };
+        dispatch({ type: "reset", payload: prevState });
       },
       queue: "double"
     }

@@ -1,12 +1,5 @@
-import { useState, useEffect, useReducer, useCallback } from "react";
-import {
-  IScheduler,
-  IAwaited,
-  Reducer,
-  ReducerState,
-  Dispatch,
-  ReducerAction
-} from './types';
+import { useState, useEffect, useReducer, useCallback } from 'react';
+import { IScheduler, IAwaited, Reducer, ReducerState, Dispatch, ReducerAction } from './types';
 
 function useOptimisticReducer<R extends Reducer<any, any>, I>(
   reducer: R,
@@ -17,13 +10,19 @@ function useOptimisticReducer<R extends Reducer<any, any>, I>(
 
   const [state, dispatch] = useReducer(reducer, initializerArg);
 
-  useEffect(() => {
-    runCallback();
-  }, [scheduler]);
+  useEffect(
+    () => {
+      runCallback();
+    },
+    [scheduler]
+  );
 
-  useEffect(() => {
-    if (awaited.key) nextSchedule(awaited.key);
-  }, [awaited]);
+  useEffect(
+    () => {
+      if (awaited.key) nextSchedule(awaited.key);
+    },
+    [awaited]
+  );
 
   const nextSchedule = useCallback(
     (key: string) => {
@@ -66,18 +65,21 @@ function useOptimisticReducer<R extends Reducer<any, any>, I>(
             setAwaited({ key });
           })
           .catch(() => {
-            const action = scheduler[key].queue[0].fallbackAction();
-            // if an action is returned
-            if (typeof action === 'object') {
-              dispatch(action);
-            }
+            // Retrieve previous state
+            const { prevState } = scheduler[key];
+
+            // Execute fallback
+            scheduler[key].queue[0].fallback(prevState);
+
+            // Reset scheduler
             setScheduler((prev) => {
               return {
                 ...prev,
                 [key]: {
                   queue: [],
                   isFetching: false,
-                  isCompleted: true
+                  isCompleted: true,
+                  prevState: {}
                 }
               };
             });
@@ -94,8 +96,8 @@ function useOptimisticReducer<R extends Reducer<any, any>, I>(
     const { optimistic } = action;
     let currentScheduler = scheduler;
 
-    if (typeof optimistic === "object") {
-      /**
+    if (typeof optimistic === 'object') {
+			/**
        * If a specific queue is included within the optimistic object,
        * the actions will be executed in a separate queue.
        * If no queue is specified, the action type will be used by default.
@@ -109,7 +111,8 @@ function useOptimisticReducer<R extends Reducer<any, any>, I>(
           [key]: {
             ...currentScheduler[key],
             queue: [...currentScheduler[key].queue, optimistic],
-            isCompleted: false
+            isCompleted: false,
+            prevState: state
           }
         };
       } else {
@@ -119,7 +122,8 @@ function useOptimisticReducer<R extends Reducer<any, any>, I>(
           [key]: {
             queue: [optimistic],
             isFetching: false,
-            isCompleted: false
+            isCompleted: false,
+            prevState: state
           }
         };
       }

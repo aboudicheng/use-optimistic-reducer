@@ -1,6 +1,6 @@
 export interface IOptimistic {
   callback: Function,
-  fallbackAction: Function,
+  fallback: Function,
   queue?: string
 }
 
@@ -8,7 +8,8 @@ export interface IScheduler {
   [key: string]: {
     queue: IOptimistic[],
     isFetching: boolean,
-    isCompleted: boolean
+    isCompleted: boolean,
+    prevState: any
   }
 }
 
