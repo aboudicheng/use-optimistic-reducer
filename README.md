@@ -98,7 +98,7 @@ function App() {
           }, 3000);
         });
       },
-      fallback: () => {
+      fallback: (prevState) => {
         alert("Failed!");
         dispatch({ type: "reset", payload: prevState });
       },
