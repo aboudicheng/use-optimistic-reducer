@@ -34,7 +34,7 @@ const action = {
 | Name                      | Required | Default | Type | Description |
 | ------------------------- | -------- | ------- | ---- | ------------|
 | callback | yes |  | Function | Callback function that will be called in the background. It should be an asynchronous function. |
-| fallback | yes | | Function(prevState) | Fallback function that will be called when `callback` throws and error. You may optionally return an action that will be dispatched immediately. |
+| fallback | yes | | Function(prevState) | Fallback function that will be called when `callback` throws and error. `prevState` is the previous state before the error occurred. |
 | queue | no | action.type | string | Identifier that will be used to execute callbacks on separate queues |
 
 ## Example Usage
