@@ -23,7 +23,7 @@ const action = {
   payload: {},
   optimistic: {
     callback: async () => {},
-    fallbackAction: (prevState) => {},
+    fallback: (prevState) => {},
     queue: "" // (Optional)
   }
 }
@@ -79,7 +79,7 @@ function App() {
           }, 3000);
         });
       },
-      fallbackAction: (prevState) => {
+      fallback: (prevState) => {
         alert("Failed!");
         dispatch({ type: "reset", payload: prevState });
       },
@@ -98,7 +98,7 @@ function App() {
           }, 3000);
         });
       },
-      fallbackAction: () => {
+      fallback: () => {
         alert("Failed!");
         dispatch({ type: "reset", payload: prevState });
       },
