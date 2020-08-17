@@ -4,7 +4,13 @@
 React reducer hook for handling optimistic UI updates and race-conditions.
 
 ## Installation
+With npm:
+
 `$ npm install use-optimistic-reducer`
+
+With yarn:
+
+`$ yarn add use-optimistic-reducer`
 
 ## How It Works
 Internally, `useOptimisticReducer` uses the `React.useReducer()` hook to handle its state. You can use `useOptimisticReducer` to update the state by dispatching an action.
@@ -23,7 +29,7 @@ const action = {
   payload: {},
   optimistic: {
     callback: async () => {},
-    fallback: (prevState) => {},
+    fallback: (prevState) => {}, // (Optional)
     queue: "" // (Optional)
   }
 }
@@ -34,7 +40,7 @@ const action = {
 | Name                      | Required | Default | Type | Description |
 | ------------------------- | -------- | ------- | ---- | ------------|
 | callback | yes |  | Function | Callback function that will be called in the background. It should be an asynchronous function. |
-| fallback | yes | | Function(prevState) | Fallback function that will be called when `callback` throws and error. `prevState` is the previous state before the error occurred. |
+| fallback | no | | Function(prevState) | Fallback function that will be called when `callback` throws and error. `prevState` is the previous state before the error occurred. |
 | queue | no | action.type | string | Identifier that will be used to execute callbacks on separate queues |
 
 ## Example Usage

@@ -1,19 +1,19 @@
-export interface IOptimistic {
-  callback: Function,
-  fallback: Function,
+export type Optimistic = {
+  callback: () => Promise<any>,
+  fallback?: (prevState: any) => void,
   queue?: string
 }
 
-export interface IScheduler {
+export type Scheduler = {
   [key: string]: {
-    queue: IOptimistic[],
+    queue: Optimistic[],
     isFetching: boolean,
     isCompleted: boolean,
     prevState: any
   }
 }
 
-export interface IAwaited {
+export type Awaited = {
   key?: string | null
 }
 

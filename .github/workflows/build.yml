@@ -1,0 +1,28 @@
+name: Build
+
+on:
+  push:
+    branches:
+    - develop
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [12.x]
+
+    steps:
+    
+    - uses: actions/checkout@v1
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v1
+      with:
+        node-version: ${{ matrix.node-version }}
+
+    - run: yarn
+    - run: yarn run build
+    - run: npm test
+
+    env:
+      CI: true

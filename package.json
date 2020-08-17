@@ -4,7 +4,8 @@
   "description": "React reducer hook for handling optimistic UI updates and race-conditions.",
   "main": "build/index.js",
   "scripts": {
-    "test": "jest --config jestconfig.json --watch --verbose false",
+    "test": "jest --config jestconfig.json --verbose false",
+    "watch": "jest --config jestconfig.json --watch --verbose false",
     "build": "tsc",
     "release": "standard-version"
   },
@@ -25,8 +26,8 @@
     "jest": "^25.1.0",
     "react": "^16.12.0",
     "react-test-renderer": "^16.8.0",
-    "standard-version": "^8.0.1",
-    "ts-jest": "^25.0.0",
+    "standard-version": "^9.0.0",
+    "ts-jest": "^26.2.0",
     "typescript": "^3.7.5"
   },
   "keywords": [
