@@ -37,7 +37,7 @@ function App() {
           }, 3000);
         });
       },
-      fallbackAction: (prevState) => {
+      fallback: (prevState) => {
         alert("Failed!");
         dispatch({ type: "reset", payload: prevState });
       },
