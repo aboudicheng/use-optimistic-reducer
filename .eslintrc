@@ -12,6 +12,7 @@
     "prettier/@typescript-eslint",
     "plugin:prettier/recommended"
   ],
+  "ignorePatterns": "*.md",
   "rules": {
     "prettier/prettier": [
       "error",
