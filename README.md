@@ -50,7 +50,7 @@ const action = {
 
 ## Example Usage
 
-[Live Demo](https://stackblitz.com/edit/use-optimistic-reducer?file=index.js)
+[Live Demo](https://codesandbox.io/s/use-optimistic-reducer-example-qh7zy)
 ```javascript
 import React from "react";
 import useOptimisticReducer from "use-optimistic-reducer";
