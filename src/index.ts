@@ -1,17 +1,58 @@
 import { useState, useEffect, useReducer, useCallback } from 'react';
 import { Scheduler, Awaited, Optimistic, Reducer, ReducerState, Dispatch, ReducerAction } from './types';
+import { useImmer } from 'use-immer';
 
 function useOptimisticReducer<R extends Reducer<any, any>>(
   reducer: R,
   initializerArg: ReducerState<R>
 ): [ReducerState<R>, Dispatch<ReducerAction<R>>] {
-  const [scheduler, setScheduler] = useState<Scheduler>({});
   const [awaited, setAwaited] = useState<Awaited>({ key: null });
+  const [scheduler, setScheduler] = useImmer<Scheduler>({});
 
   const [state, dispatch] = useReducer(reducer, initializerArg);
 
   useEffect(() => {
-    runCallback();
+    (async () => {
+      for (let key in scheduler) {
+        const optimistic = scheduler[key];
+        // If queue is waiting to be called
+        if (!optimistic.isCompleted && !optimistic.isFetching) {
+          // Start fetching
+          setScheduler((draft) => {
+            draft[key] = {
+              ...draft[key],
+              isFetching: true
+            }
+          });
+
+          try {
+            await optimistic.queue[0].callback();
+            setAwaited({ key });
+          }
+          catch (e) {
+            // Retrieve previous state
+            const { prevState } = scheduler[key];
+
+            // Execute fallback if provided
+            const { fallback } = scheduler[key].queue[0];
+
+            if (typeof fallback !== 'undefined') {
+              fallback(prevState);
+            }
+
+            // Reset scheduler
+            setScheduler((draft) => {
+              draft[key] = {
+                queue: [],
+                isFetching: false,
+                isCompleted: true,
+                prevState: {}
+              }
+            });
+          }
+        }
+      }
+    })();
   }, [scheduler]);
 
   useEffect(() => {
@@ -20,72 +61,18 @@ function useOptimisticReducer<R extends Reducer<any, any>>(
     }
   }, [awaited]);
 
-  const nextSchedule = useCallback(
-    (key: string) => {
-      const nextQueue = scheduler[key].queue.slice(1);
+  const nextSchedule = useCallback((key: string) => {
+    const nextQueue = scheduler[key].queue.slice(1);
 
-      setScheduler((prev) => {
-        return {
-          ...prev,
-          [key]: {
-            ...prev[key],
-            queue: nextQueue,
-            isFetching: false,
-            isCompleted: !nextQueue.length
-          }
-        };
-      });
-    },
-    [scheduler]
-  );
-
-  async function runCallback() {
-    for (let key in scheduler) {
-      const optimistic = scheduler[key];
-      // If queue is waiting to be called
-      if (!optimistic.isCompleted && !optimistic.isFetching) {
-        // Start fetching
-        setScheduler((prev) => {
-          return {
-            ...prev,
-            [key]: {
-              ...prev[key],
-              isFetching: true
-            }
-          };
-        });
-
-        try {
-          await optimistic.queue[0].callback();
-          setAwaited({ key });
-        }
-        catch (e) {
-          // Retrieve previous state
-          const { prevState } = scheduler[key];
-
-          // Execute fallback if provided
-          const { fallback } = scheduler[key].queue[0];
-
-          if (typeof fallback !== 'undefined') {
-            fallback(prevState);
-          }
-
-          // Reset scheduler
-          setScheduler((prev) => {
-            return {
-              ...prev,
-              [key]: {
-                queue: [],
-                isFetching: false,
-                isCompleted: true,
-                prevState: {}
-              }
-            };
-          });
-        }
+    setScheduler((draft) => {
+      draft[key] = {
+        ...draft[key],
+        queue: nextQueue,
+        isFetching: false,
+        isCompleted: !nextQueue.length
       }
-    }
-  }
+    });
+  }, [scheduler]);
 
   function customDispatch(action: ReducerAction<R>): void {
     // Update the UI first
@@ -93,7 +80,6 @@ function useOptimisticReducer<R extends Reducer<any, any>>(
 
     // If action is dispatched optimistically
     const optimistic: Optimistic = action.optimistic;
-    let currentScheduler = scheduler;
 
     if (typeof optimistic === 'object') {
 			/**
@@ -106,29 +92,26 @@ function useOptimisticReducer<R extends Reducer<any, any>>(
       // Schedule callback
       if (key in scheduler) {
         // Append action into the existing queue
-        currentScheduler = {
-          ...currentScheduler,
-          [key]: {
-            ...currentScheduler[key],
-            queue: [...currentScheduler[key].queue, optimistic],
+        setScheduler((draft) => {
+          draft[key] = {
+            ...draft[key],
+            queue: [...draft[key].queue, optimistic],
             isCompleted: false,
             prevState: state
           }
-        };
+        });
       }
       else {
         // Add action to a new queue
-        currentScheduler = {
-          ...currentScheduler,
-          [key]: {
+        setScheduler((draft) => {
+          draft[key] = {
             queue: [optimistic],
             isFetching: false,
             isCompleted: false,
             prevState: state
           }
-        };
+        });
       }
-      setScheduler(currentScheduler);
     }
   }
 
