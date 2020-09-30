@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.2.0](https://github.com/aboudicheng/use-optimistic-reducer/compare/v1.1.9...v1.2.0) (2020-09-30)
+
+
+### Features
+
+* **state:** Use ImmerJS to handle scheduler ([80d9081](https://github.com/aboudicheng/use-optimistic-reducer/commit/80d90811dbce9bc531f7766a116e1d8a1ee7600c))
+
 ### [1.1.9](https://github.com/aboudicheng/use-optimistic-reducer/compare/v1.1.7...v1.1.9) (2020-08-17)
 
 ### [1.1.7](https://github.com/aboudicheng/use-optimistic-reducer/compare/v1.1.6...v1.1.7) (2020-02-04)
