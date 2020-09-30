@@ -1,5 +1,13 @@
 import { useState, useEffect, useReducer, useCallback } from 'react';
-import { Scheduler, Awaited, Optimistic, Reducer, ReducerState, Dispatch, ReducerAction } from './types';
+import {
+  Scheduler,
+  Awaited,
+  Optimistic,
+  Reducer,
+  ReducerState,
+  Dispatch,
+  ReducerAction,
+} from './types';
 import { useImmer } from 'use-immer';
 
 function useOptimisticReducer<R extends Reducer<any, any>>(
@@ -13,7 +21,7 @@ function useOptimisticReducer<R extends Reducer<any, any>>(
 
   useEffect(() => {
     (async () => {
-      for (let key in scheduler) {
+      for (const key in scheduler) {
         const optimistic = scheduler[key];
         // If queue is waiting to be called
         if (!optimistic.isCompleted && !optimistic.isFetching) {
@@ -21,15 +29,14 @@ function useOptimisticReducer<R extends Reducer<any, any>>(
           setScheduler((draft) => {
             draft[key] = {
               ...draft[key],
-              isFetching: true
-            }
+              isFetching: true,
+            };
           });
 
           try {
             await optimistic.queue[0].callback();
             setAwaited({ key });
-          }
-          catch (e) {
+          } catch (e) {
             // Retrieve previous state
             const { prevState } = scheduler[key];
 
@@ -46,8 +53,8 @@ function useOptimisticReducer<R extends Reducer<any, any>>(
                 queue: [],
                 isFetching: false,
                 isCompleted: true,
-                prevState: {}
-              }
+                prevState: {},
+              };
             });
           }
         }
@@ -61,18 +68,21 @@ function useOptimisticReducer<R extends Reducer<any, any>>(
     }
   }, [awaited]);
 
-  const nextSchedule = useCallback((key: string) => {
-    const nextQueue = scheduler[key].queue.slice(1);
+  const nextSchedule = useCallback(
+    (key: string) => {
+      const nextQueue = scheduler[key].queue.slice(1);
 
-    setScheduler((draft) => {
-      draft[key] = {
-        ...draft[key],
-        queue: nextQueue,
-        isFetching: false,
-        isCompleted: !nextQueue.length
-      }
-    });
-  }, [scheduler]);
+      setScheduler((draft) => {
+        draft[key] = {
+          ...draft[key],
+          queue: nextQueue,
+          isFetching: false,
+          isCompleted: !nextQueue.length,
+        };
+      });
+    },
+    [scheduler]
+  );
 
   function customDispatch(action: ReducerAction<R>): void {
     // Update the UI first
@@ -82,7 +92,7 @@ function useOptimisticReducer<R extends Reducer<any, any>>(
     const optimistic: Optimistic = action.optimistic;
 
     if (typeof optimistic === 'object') {
-			/**
+      /**
        * If a specific queue is included within the optimistic object,
        * the actions will be executed in a separate queue.
        * If no queue is specified, the action type will be used by default.
@@ -97,19 +107,18 @@ function useOptimisticReducer<R extends Reducer<any, any>>(
             ...draft[key],
             queue: [...draft[key].queue, optimistic],
             isCompleted: false,
-            prevState: state
-          }
+            prevState: state,
+          };
         });
-      }
-      else {
+      } else {
         // Add action to a new queue
         setScheduler((draft) => {
           draft[key] = {
             queue: [optimistic],
             isFetching: false,
             isCompleted: false,
-            prevState: state
-          }
+            prevState: state,
+          };
         });
       }
     }
