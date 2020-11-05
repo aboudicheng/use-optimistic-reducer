@@ -27,10 +27,7 @@ function useOptimisticReducer<R extends Reducer<any, any>>(
         if (!optimistic.isCompleted && !optimistic.isFetching) {
           // Start fetching
           setScheduler((draft) => {
-            draft[key] = {
-              ...draft[key],
-              isFetching: true,
-            };
+            draft[key].isFetching = true;
           });
 
           try {
@@ -73,12 +70,9 @@ function useOptimisticReducer<R extends Reducer<any, any>>(
       const nextQueue = scheduler[key].queue.slice(1);
 
       setScheduler((draft) => {
-        draft[key] = {
-          ...draft[key],
-          queue: nextQueue,
-          isFetching: false,
-          isCompleted: !nextQueue.length,
-        };
+        draft[key].queue = nextQueue;
+        draft[key].isFetching = false;
+        draft[key].isCompleted = !nextQueue.length;
       });
     },
     [scheduler]
@@ -103,12 +97,9 @@ function useOptimisticReducer<R extends Reducer<any, any>>(
       if (key in scheduler) {
         // Append action into the existing queue
         setScheduler((draft) => {
-          draft[key] = {
-            ...draft[key],
-            queue: [...draft[key].queue, optimistic],
-            isCompleted: false,
-            prevState: state,
-          };
+          draft[key].queue.push(optimistic);
+          draft[key].isCompleted = false;
+          draft[key].prevState = state;
         });
       } else {
         // Add action to a new queue
