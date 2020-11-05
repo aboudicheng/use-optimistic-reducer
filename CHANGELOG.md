@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.3.0](https://github.com/aboudicheng/use-optimistic-reducer/compare/v1.2.2...v1.3.0) (2020-11-05)
+
+
+### Features
+
+* **types:** add optimistic type to action ([c7eade3](https://github.com/aboudicheng/use-optimistic-reducer/commit/c7eade325469ab0c2c0242f0ee8f95c3941c6d3a))
+
 ### [1.2.2](https://github.com/aboudicheng/use-optimistic-reducer/compare/v1.2.1...v1.2.2) (2020-09-30)
 
 ### [1.2.1](https://github.com/aboudicheng/use-optimistic-reducer/compare/v1.2.0...v1.2.1) (2020-09-30)
