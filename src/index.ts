@@ -15,7 +15,7 @@ function useOptimisticReducer<R extends Reducer<any, any>>(
   initializerArg: ReducerState<R>
 ): [ReducerState<R>, Dispatch<ReducerAction<R>>] {
   const [awaited, setAwaited] = useState<Awaited>({ key: null });
-  const [scheduler, setScheduler] = useImmer<Scheduler>({});
+  const [scheduler, setScheduler] = useImmer<Scheduler<R> | any>({});
 
   const [state, dispatch] = useReducer(reducer, initializerArg);
 
@@ -79,11 +79,15 @@ function useOptimisticReducer<R extends Reducer<any, any>>(
   );
 
   function customDispatch(action: ReducerAction<R>): void {
-    // Update the UI first
-    dispatch(action);
+    // Extract the optimistic property from a cloned action
+    const clonedAction: ReducerAction<R> = Object.assign({}, action);
+    delete clonedAction.optimistic;
+
+    // Update the UI without sending the optimistic property
+    dispatch(clonedAction);
 
     // If action is dispatched optimistically
-    const optimistic: Optimistic = action.optimistic;
+    const optimistic: Optimistic<R> = action.optimistic;
 
     if (typeof optimistic === 'object') {
       /**
