@@ -45,86 +45,93 @@ const action = {
 | Name                      | Required | Default | Type | Description |
 | ------------------------- | -------- | ------- | ---- | ------------|
 | callback | yes |  | Function | Callback function that will be called in the background. It should be an asynchronous function. |
-| fallback | no | | Function(prevState) | Fallback function that will be called when `callback` throws an error. `prevState` is the previous state before the error occurred. |
+| fallback | no | | Function(prevState) | Fallback function that will be called when `callback` throws an error. `prevState` is the previous state before the error occurred, and it has the same type as the reducer state. |
 | queue | no | action.type | string | Identifier that will be used to execute callbacks on separate queues |
 
 ## Example Usage
 
-[Live Demo](https://codesandbox.io/s/use-optimistic-reducer-example-qh7zy)
-```javascript
+[Demo with Typescript](https://codesandbox.io/s/use-optimistic-reducer-ts-example-je350)
+```tsx
 import React from "react";
 import useOptimisticReducer from "use-optimistic-reducer";
 
-const initialState = { count: 0 };
+type StateProps = {
+  reaction: string;
+};
 
-function reducer(state, action) {
+type Action =
+  | { type: "SET_REACTION"; payload: string }
+  | { type: "RESET_STATE"; payload: StateProps };
+
+const reducer = (state: StateProps, action: Action) => {
   switch (action.type) {
-    case "reset":
+    case "SET_REACTION":
+      if (action.payload === state.reaction) {
+        return { ...state, reaction: "" };
+      }
+      return { ...state, reaction: action.payload };
+    case "RESET_STATE":
       return action.payload;
-    case "increment":
-      return { count: state.count + 1 };
-    case "decrement":
-      return { count: state.count - 1 };
-    case "double-increment":
-      return { count: state.count + 2 };
-    case "double-decrement":
-      return { count: state.count - 2 };
     default:
       return state;
   }
-}
+};
 
-function App() {
-  // Define your reducer the same way you would for React.useReducer()
-  const [state, dispatch] = useOptimisticReducer(reducer, initialState);
+const apiCall = () => {
+  return new Promise((res, rej) => {
+    setTimeout(() => {
+      console.log("Response from server");
+      res();
 
-  // optimistic actions
-  const doubleIncAction = {
-    type: "double-increment",
-    optimistic: {
-      callback: () => {
-        return new Promise((resolve, reject) => {
-          setTimeout(() => {
-            console.log("This is a callback from double-increment");
-            resolve();
-          }, 3000);
-        });
-      },
-      fallback: (prevState) => {
-        alert("Failed!");
-        dispatch({ type: "reset", payload: prevState });
-      },
-      queue: "double"
-    }
-  };
+      // reject promise to see execution of the fallback
+      // rej();
+    }, 1000);
+  });
+};
 
-  const doubleDecAction = {
-    type: "double-decrement",
-    optimistic: {
-      callback: () => {
-        return new Promise(resolve => {
-          setTimeout(() => {
-            console.log("This is a callback from double-decrement");
-            resolve();
-          }, 3000);
-        });
-      },
-      fallback: (prevState) => {
-        alert("Failed!");
-        dispatch({ type: "reset", payload: prevState });
-      },
-      queue: "double"
-    }
-  };
+export default function App() {
+  const [state, dispatch] = useOptimisticReducer(reducer, { reaction: "" });
+
+  function handleClick(reaction: string) {
+    dispatch({
+      type: "SET_REACTION",
+      payload: reaction,
+      optimistic: {
+        callback: apiCall,
+        fallback: (prevState) => {
+          // revert previous state in case the apiCall throws an exception
+          dispatch({ type: "RESET_STATE", payload: prevState });
+        },
+        queue: "reaction"
+      }
+    });
+  }
 
   return (
-    <>
-      Count: {state.count}
-      <button onClick={() => dispatch({ type: "decrement" })}>-</button>
-      <button onClick={() => dispatch({ type: "increment" })}>+</button>
-      <button onClick={() => dispatch(doubleIncAction)}>++</button>
-      <button onClick={() => dispatch(doubleDecAction)}>--</button>
-    </>
+    <div>
+      <h1>Reaction: {state.reaction.length ? state.reaction : "None"}</h1>
+      <div>
+        <button onClick={() => handleClick("Funny")}>
+          <span role="img" aria-label="funny">
+            😂
+          </span>
+          Funny
+        </button>
+        <button onClick={() => handleClick("Amazing")}>
+          <span role="img" aria-label="amazing">
+            😮
+          </span>{" "}
+          Amazing
+        </button>
+        <button onClick={() => handleClick("Sad")}>
+          <span role="img" aria-label="sad">
+            😢
+          </span>{" "}
+          Sad
+        </button>
+      </div>
+    </div>
   );
 }
+
 ```
