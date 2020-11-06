@@ -18,6 +18,9 @@ $ yarn add use-optimistic-reducer
 
 
 ## How It Works
+
+![flowchart](https://raw.githubusercontent.com/aboudicheng/use-optimistic-reducer/master/img/flowchart.png)
+
 Internally, `useOptimisticReducer` uses the `React.useReducer()` hook to handle its state. You can use `useOptimisticReducer` to update the state by dispatching an action.
 
 Whenever you need to make an optimistic UI update, you simply need to add another property named as `optimistic` inside your action object.
