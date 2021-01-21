@@ -13,7 +13,7 @@
   "author": "Ping Cheng",
   "license": "MIT",
   "dependencies": {
-    "immer": "^7.0.7",
+    "immer": "^8.0.1",
     "use-immer": "^0.4.1"
   },
   "devDependencies": {
